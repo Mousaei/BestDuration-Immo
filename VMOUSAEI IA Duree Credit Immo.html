@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>IA + Simulation Crédit Immobilier</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #0f172a;
+        color: #e2e8f0;
+    }
+
+    header {
+        background: #1e293b;
+        padding: 20px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .card {
+        background: #1e293b;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+        color: #38bdf8;
+        margin-top: 0;
+    }
+
+    label {
+        display: block;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 6px;
+        border: none;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px;
+        width: 100%;
+        background: #38bdf8;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background: #0ea5e9;
+    }
+
+    .result {
+        margin-top: 15px;
+        background: #0f172a;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .ai-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .ai-item {
+        background: #0f172a;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .tag {
+        color: #38bdf8;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    🤖 IA + Simulation Crédit Immobilier (Île-de-France)
+</header>
+
+<div class="container">
+
+    <!-- IA SECTION -->
+    <div class="card">
+        <h2>🧠 Comparaison des concepts d’IA</h2>
+
+        <div class="ai-grid">
+
+            <div class="ai-item">
+                <span class="tag">Systèmes experts</span><br>
+                Basés sur des règles "SI... ALORS". Très explicites mais peu flexibles.
+            </div>
+
+            <div class="ai-item">
+                <span class="tag">Apprentissage symbolique</span><br>
+                Manipule des concepts logiques structurés. Bon pour le raisonnement formel.
+            </div>
+
+            <div class="ai-item">
+                <span class="tag">Raisonnement à partir de cas (CBR)</span><br>
+                Résout de nouveaux problèmes en s’appuyant sur des cas similaires passés.
+            </div>
+
+            <div class="ai-item">
+                <span class="tag">Machine Learning</span><br>
+                Apprend des patterns à partir des données sans règles explicites.
+            </div>
+
+            <div class="ai-item">
+                <span class="tag">Réseaux de neurones</span><br>
+                Sous-catégorie du ML, très puissant pour images, texte, prédiction complexe.
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SIMULATION -->
+    <div class="card">
+        <h2>🏠 Simulation crédit immobilier (Paris / IDF)</h2>
+
+        <label>💰 Salaire mensuel (€)</label>
+        <input id="salary" type="number" placeholder="ex: 3500">
+
+        <label>🏦 Apport initial (€)</label>
+        <input id="deposit" type="number" placeholder="ex: 30000">
+
+        <label>📈 Taux d'intérêt annuel (%)</label>
+        <input id="rate" type="number" step="0.1" placeholder="ex: 3.5">
+
+        <label>🏙 Prix au m² (€)</label>
+        <input id="price" type="number" placeholder="ex: 9500">
+
+        <label>📏 Surface (m²)</label>
+        <input id="surface" type="number" placeholder="ex: 50">
+
+        <button onclick="calculate()">Calculer la durée optimale</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+</div>
+
+<script>
+function calculate() {
+    const salary = parseFloat(document.getElementById("salary").value);
+    const deposit = parseFloat(document.getElementById("deposit").value);
+    const rate = parseFloat(document.getElementById("rate").value) / 100 / 12;
+    const price = parseFloat(document.getElementById("price").value);
+    const surface = parseFloat(document.getElementById("surface").value);
+
+    if (!salary || !deposit || !rate || !price || !surface) {
+        document.getElementById("result").innerHTML = "⚠️ Remplis tous les champs.";
+        return;
+    }
+
+    const propertyPrice = price * surface;
+    const loan = propertyPrice - deposit;
+
+    if (loan <= 0) {
+        document.getElementById("result").innerHTML = "🎉 Ton apport couvre déjà le bien.";
+        return;
+    }
+
+    const maxMonthlyPayment = salary * 0.33;
+
+    // recherche de durée (jusqu'à 30 ans)
+    let months = 12;
+    let found = false;
+
+    for (let m = 12; m <= 360; m++) {
+        const payment = (loan * rate) / (1 - Math.pow(1 + rate, -m));
+        if (payment <= maxMonthlyPayment) {
+            months = m;
+            found = true;
+            break;
+        }
+    }
+
+    const years = (months / 12).toFixed(1);
+    const monthly = (loan * rate) / (1 - Math.pow(1 + rate, -months));
+
+    document.getElementById("result").innerHTML = `
+        🏡 Prix du bien : ${propertyPrice.toLocaleString()} € <br>
+        💳 Montant emprunté : ${loan.toLocaleString()} € <br>
+        📆 Durée recommandée : ${years} ans <br>
+        💸 Mensualité estimée : ${monthly.toFixed(0)} € <br>
+        📊 Taux d’endettement max utilisé : 33%
+    `;
+}
+</script>
+
+</body>
+</html>
